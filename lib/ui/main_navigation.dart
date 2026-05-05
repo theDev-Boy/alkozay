@@ -5,6 +5,7 @@ import 'pages/imports_page.dart';
 import 'pages/inventory_page.dart';
 import 'pages/reports_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/history_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -20,6 +21,7 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
   final List<Widget> _pages = [
     const HomePage(),
     const ShopsPage(),
+    const HistoryPage(),
     const ImportsPage(),
     const InventoryPage(),
     const ReportsPage(),
@@ -99,6 +101,11 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
                 icon: Icon(Icons.storefront_outlined),
                 selectedIcon: Icon(Icons.storefront, color: Color(0xFF1162D4)),
                 label: 'Shops',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.history_outlined),
+                selectedIcon: Icon(Icons.history, color: Color(0xFF1162D4)),
+                label: 'History',
               ),
               NavigationDestination(
                 icon: Icon(Icons.local_shipping_outlined),
