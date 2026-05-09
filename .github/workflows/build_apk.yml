@@ -35,16 +35,41 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Fix legacy plugin namespace issues
+      - name: Fix old plugin compatibility for modern AGP
         run: |
-          echo "Patching old plugins that use package attribute in AndroidManifest.xml..."
+          echo "=== Fixing old plugins for AGP 8.11+ ==="
+
+          # 1. Remove deprecated 'package' attribute from all AndroidManifest.xml
+          echo "Step 1: Patching AndroidManifest.xml files..."
           find ~/.pub-cache/hosted/pub.dev -name "AndroidManifest.xml" -path "*/android/src/main/*" | while read manifest; do
             if grep -q 'package=' "$manifest"; then
-              echo "Patching: $manifest"
+              echo "  Patching manifest: $manifest"
               sed -i 's/ package="[^"]*"//' "$manifest"
             fi
           done
-          echo "Done patching manifests."
+
+          # 2. Fix compileSdkVersion in all old plugin build.gradle files
+          echo "Step 2: Upgrading compileSdkVersion in old plugins..."
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle" -path "*/android/*" | while read gradle_file; do
+            if grep -qE "compileSdkVersion\s+(1[0-9]|2[0-9]|3[0-4])\b" "$gradle_file" 2>/dev/null; then
+              echo "  Patching compileSdk: $gradle_file"
+              sed -i -E "s/compileSdkVersion\s+[0-9]+/compileSdkVersion 35/" "$gradle_file"
+            fi
+            if grep -qE "compileSdk\s+(1[0-9]|2[0-9]|3[0-4])\b" "$gradle_file" 2>/dev/null; then
+              echo "  Patching compileSdk: $gradle_file"
+              sed -i -E "s/compileSdk\s+[0-9]+/compileSdk 35/" "$gradle_file"
+            fi
+          done
+
+          # 3. Also fix .gradle.kts files
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle.kts" -path "*/android/*" | while read gradle_file; do
+            if grep -qE "compileSdk\s*=\s*(1[0-9]|2[0-9]|3[0-4])\b" "$gradle_file" 2>/dev/null; then
+              echo "  Patching compileSdk (kts): $gradle_file"
+              sed -i -E "s/compileSdk\s*=\s*[0-9]+/compileSdk = 35/" "$gradle_file"
+            fi
+          done
+
+          echo "=== All patches applied ==="
 
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
