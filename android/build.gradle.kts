@@ -22,8 +22,11 @@ subprojects {
 subprojects {
     project.pluginManager.withPlugin("com.android.library") {
         val android = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
-        if (android != null && android.namespace == null) {
-            android.namespace = "dev.flutter.plugins.${project.name.replace("-", "_")}"
+        if (android != null) {
+            if (android.namespace == null) {
+                android.namespace = "dev.flutter.plugins.${project.name.replace("-", "_")}"
+            }
+            android.compileSdkVersion(35)
         }
     }
 }
