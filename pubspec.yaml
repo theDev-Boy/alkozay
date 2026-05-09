@@ -11,8 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  isar: ^4.0.0+4
   path_provider: ^2.1.2
   fl_chart: ^0.66.0
   pdf: ^3.10.8
@@ -28,7 +27,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  isar_generator: ^3.1.0+1
+  isar_generator: ^4.0.0+4
   build_runner: ^2.4.8
   flutter_lints: ^6.0.0
 
