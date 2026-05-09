@@ -35,8 +35,19 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Fix legacy plugin namespace issues
+        run: |
+          echo "Patching old plugins that use package attribute in AndroidManifest.xml..."
+          find ~/.pub-cache/hosted/pub.dev -name "AndroidManifest.xml" -path "*/android/src/main/*" | while read manifest; do
+            if grep -q 'package=' "$manifest"; then
+              echo "Patching: $manifest"
+              sed -i 's/ package="[^"]*"//' "$manifest"
+            fi
+          done
+          echo "Done patching manifests."
+
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons --no-pub
+        run: flutter build apk --release --no-tree-shake-icons
         env:
           JAVA_OPTS: "-Xmx3G"
           GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xmx3G -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8'"
